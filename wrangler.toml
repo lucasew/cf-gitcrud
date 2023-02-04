@@ -1,0 +1,6 @@
+name = "cf-gitcrud"
+main = "src/index.ts"
+compatibility_date = "2023-02-03"
+
+[vars]
+JWT_KEY = "teste"
