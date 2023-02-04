@@ -12,6 +12,5 @@
     "deploy": "wrangler publish"
   },
   "dependencies": {
-    "jose": "^4.11.2"
   }
 }

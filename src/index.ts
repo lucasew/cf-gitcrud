@@ -1,5 +1,4 @@
-import * as jose from 'jose';
-import * as lib from './lib.ts';
+import * as lib from './lib';
 
 // ALERT: You have to define JWT_KEY as secret before running this
 // echo <yoursecret> | wrangler secret put JWT_KEY
@@ -22,6 +21,7 @@ export interface Env {
 	//
 	// Example binding to R2. Learn more at https://developers.cloudflare.com/workers/runtime-apis/r2/
 	// MY_BUCKET: R2Bucket;
+	JWT_KEY: string
 }
 
 export default {
