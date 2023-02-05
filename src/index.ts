@@ -2,15 +2,6 @@ import * as lib from './lib';
 
 // ALERT: You have to define JWT_KEY as secret before running this
 // echo <yoursecret> | wrangler secret put JWT_KEY
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `wrangler dev src/index.ts` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `wrangler publish src/index.ts --name my-worker` to publish your worker
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
 
 export interface Env {
 	// Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
@@ -58,21 +49,33 @@ export default {
 		} else {
 			const { ghtoken, gistId } = await lib.crypt.decryptObject(parts[0])
 			lib.ghgist.setup(ghtoken)
-			if (parts.length === 3) {
-				if (parts[1] === "set") {
+			if (parts[1] === "set") {
+				if (parts.length == 3) {
 					const body = await request.text()
+					const path = parts.slice(2).join("/")
 					return new Response(JSON.stringify(
 						await lib.ghgist.update(gistId, {
-							[parts[2]]: body
+							[path]: body
 						})
 					))
-				} else if (parts[1] === "peek") {
+				}
+			} else if (parts[1] === "peek") {
+				if (parts.length === 2) {
 					return new Response(JSON.stringify(
 						await lib.ghgist.peek(gistId)
 					))
 				}
-			} else if (parts.length === 2) {
-				if (parts[1] === "getAll") {
+			} else if (parts[1] === "get") {
+				const path = parts.slice(2).join("/")
+				const files = await lib.ghgist.getAll(gistId)
+				const file = files[path];
+				if (!file) {
+					return new Response("file not found", {status: 404})
+				} else {
+					return new Response(file)
+				}
+			} else if (parts[1] === "getAll") {
+				if (parts.length === 2) {
 					return new Response(JSON.stringify(
 						await lib.ghgist.getAll(gistId)
 					))
@@ -81,21 +84,21 @@ export default {
 		}
 		return new Response("not found", { status: 404 })
 
-		try {
-			const encrypted = await lib.crypt.encryptObject({a: 2})
-			console.log('encrypted_result', encrypted)
-			console.log(await lib.crypt.decryptObject(encrypted))
-			// console.log("content", await request.text())
-			// return new Response(await lib.createGist({description: "Teste", is_public: false}))
-			// return new Response(JSON.stringify(await lib.peekGist("3ff9263ce5798bc57ab3f951a455d213")))
-			// return new Response(JSON.stringify(await lib.updateGist("3ff9263ce5798bc57ab3f951a455d213", {
-				// a: "2",
-				// eoq: "trabson"
-			// })))
-			return new Response("foi")
-		} catch (e) {
-			console.error(e)
-			return new Response("deu cagada")
-		}
+		// try {
+		// 	const encrypted = await lib.crypt.encryptObject({a: 2})
+		// 	console.log('encrypted_result', encrypted)
+		// 	console.log(await lib.crypt.decryptObject(encrypted))
+		// 	// console.log("content", await request.text())
+		// 	// return new Response(await lib.createGist({description: "Teste", is_public: false}))
+		// 	// return new Response(JSON.stringify(await lib.peekGist("3ff9263ce5798bc57ab3f951a455d213")))
+		// 	// return new Response(JSON.stringify(await lib.updateGist("3ff9263ce5798bc57ab3f951a455d213", {
+		// 		// a: "2",
+		// 		// eoq: "trabson"
+		// 	// })))
+		// 	return new Response("foi")
+		// } catch (e) {
+		// 	console.error(e)
+		// 	return new Response("deu cagada")
+		// }
 	},
-};
+}
