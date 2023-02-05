@@ -47,7 +47,13 @@ export default {
 			await lib.ghgist.peek(gistId)
 			return new Response(await lib.crypt.encryptObject({ghtoken, gistId}))
 		} else {
-			const { ghtoken, gistId } = await lib.crypt.decryptObject(parts[0])
+			const { ghtoken, gistId } = await lib.crypt.decryptObject(parts[0]).catch(e => {
+				console.error(e)
+				return {}
+			})
+			if (!ghtoken || !gistId) {
+				return new Response("bad token", { status: 401 })
+			}
 			lib.ghgist.setup(ghtoken)
 			if (parts[1] === "set") {
 				if (parts.length == 3) {
