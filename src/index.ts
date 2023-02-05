@@ -27,8 +27,9 @@ export default {
 			return new Response("not found", {status: 404})
 		}
 		await lib.crypt.setup(env.JWT_KEY)
-
-		if (parts[0] === 'auth') {
+		if (parts[0] === 'favicon.ico') {
+			return new Response("", {status: 404})
+		} else if (parts[0] === 'auth') {
 			const ghtoken = url.searchParams.get('ghtoken')
 			if (!ghtoken) {
 				return new Response("missing ghtoken", {status: 400})
@@ -64,6 +65,7 @@ export default {
 				console.error(e)
 				return {}
 			})
+			console.log("data", {gistId, permissions})
 			if (!ghtoken || !gistId) {
 				return new Response("bad token", { status: 401 })
 			}
@@ -94,13 +96,7 @@ export default {
 			} else if (parts[1] === "get") {
 				const path = parts.slice(2).join("/")
 				if (permissions.filter((p: string) => `get${path}`.startsWith(p)).length > 0) {
-					const files = await lib.ghgist.getAll(gistId)
-					const file = files[path];
-					if (!file) {
-						return new Response("file not found", {status: 404})
-					} else {
-						return new Response(file)
-					}
+					return await lib.ghgist.get(gistId, path)
 				} else {
 					return new Response("unauthorized", {status: 401})
 				}

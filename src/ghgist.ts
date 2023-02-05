@@ -41,6 +41,17 @@ export async function peek(gistId: string) {
 	})
 }
 
+export async function get(gistId: string, filename: string) {
+	console.log("novo get")
+	const rawGistURL = await fetch(`https://gist.github.com/${gistId}`)
+	const res = await fetch(`${rawGistURL.url}/raw/${filename}`)
+	if (res.ok) {
+		return new Response(res.body)
+	} else {
+		return new Response(res.statusText, { status: res.status })
+	}
+}
+
 export async function getAll(gistId: string) {
 	const res = await fetch(`https://api.github.com/gists/${gistId}`, {
 		method: 'GET',

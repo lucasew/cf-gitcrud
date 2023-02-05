@@ -56,11 +56,11 @@ export function decodeBuffer(buf: Uint8Array): string {
 	for (let i = 0; i < buf2.length; i++) {
 		arr[i] = String.fromCharCode(buf2[i])
 	}
-	return btoa(arr.join('')).replace("/","_")
+	return btoa(arr.join('')).replaceAll("/","_")
 }
 
 export function encodeBuffer(encoded: string): Uint8Array {
-	const dec = atob(encoded.replace("_", "/"))
+	const dec = atob(encoded.replaceAll("_", "/"))
 	let ret = new Uint8Array(dec.length)
 	for (let i = 0; i < dec.length; i++) {
 		ret[i] = dec.charCodeAt(i)
@@ -79,7 +79,6 @@ export async function decryptObject(ciphertext: string) {
 	for (let i = 0; i < payloadBytes; i++) {
 		cryptBytes[i] = decoded[iv.length + i];
 	}
-	console.log(iv, cryptBytes)
 	const decryptBytes = await crypto.subtle.decrypt(
 		{ name: 'AES-GCM', iv },
 		key,
