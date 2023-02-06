@@ -31,7 +31,6 @@ export async function create(params = {description: string | null, is_public: bo
 		body: content
 	})
 	const json = await res.json()
-	console.log(json)
 	return json['id']
 }
 
@@ -42,8 +41,8 @@ export async function peek(gistId: string) {
 }
 
 export async function get(gistId: string, filename: string) {
-	console.log("novo get")
 	const rawGistURL = await fetch(`https://gist.github.com/${gistId}`)
+	console.log(rawGistURL.url)
 	const res = await fetch(`${rawGistURL.url}/raw/${filename}`)
 	if (res.ok) {
 		return new Response(res.body)
