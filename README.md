@@ -19,3 +19,6 @@ Basic storage for small textual values based on GitHub Gists but allows you to b
 - `/:token/peek`: Test if the gist is accesible and editable by the backing token by creating a dummy file (`.gitcrud`) in the gist.
 - `/:token/getAll`: List all accessible keys with their values available in the Gist.
 - `/:token/subgrant/:method/:payload`: Create another token with one permission that is a subset of the permissions available in the current token.
+
+# Limitations
+- Gist content has a cache TTL of 300s by default. That's the time it takes for a new information to be available to subsequent GETs. This app can't control this.
