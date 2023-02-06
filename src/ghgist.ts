@@ -5,9 +5,12 @@ export function setup(token: string) {
 	githubToken = token
 }
 
-
-export async function create(params = {description: string | null, is_public: boolean = false}) {
-	let contentObj = {
+type CreateParams = {
+	description: string | null,
+	is_public: boolean
+}
+export async function create(params: CreateParams = {is_public: false, description: null}) {
+	let contentObj: any = {
 		public: params.is_public,
 		files: {
 			".gitcrud": {
@@ -30,14 +33,15 @@ export async function create(params = {description: string | null, is_public: bo
 		},
 		body: content
 	})
-	const json = await res.json()
+	const json = await res.json<{id: string}>()
 	return json['id']
 }
 
 export async function peek(gistId: string) {
-	return await update(gistId, {
+	const res = await update(gistId, {
 		".gitcrud": "This is a placeholder file because it's impossible to create empty gists"
 	})
+	return Response(res.statusText, res.status)
 }
 
 export async function get(gistId: string, filename: string) {
@@ -61,8 +65,8 @@ export async function getAll(gistId: string) {
 			"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0"
 		},
 	})
-	const json = await res.json()
-	let ret = {}
+	const json = await res.json<{files: Record<string, {content: string}>}>()
+	let ret: Record<string,string> = {}
 	Object.keys(json.files).forEach(k => {
 		ret[k] = json.files[k].content
 	})
@@ -71,7 +75,7 @@ export async function getAll(gistId: string) {
 
 export async function update(gistId: string, files: Record<string,string>) {
 	let input = {
-		files: {}
+		files: {} as Record<string, {content: string}>
 	}
 	Object.keys(files).map(file => {
 		input.files[file] = {
@@ -89,5 +93,5 @@ export async function update(gistId: string, files: Record<string,string>) {
 		},
 		body: content
 	})
-	return await res.json()
+	return new Response(res.statusText, { status: res.status })
 }

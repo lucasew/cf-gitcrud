@@ -78,20 +78,16 @@ export default {
 					const body = await request.text()
 					const path = parts.slice(2).join("/")
 					if (permissions.filter((p: string) => `set${path}`.startsWith(p)).length > 0) {
-						return new Response(JSON.stringify(
-							await lib.ghgist.update(gistId, {
-								[path]: body
-							})
-						))
+						return await lib.ghgist.update(gistId, {
+							[path]: body
+						})
 					} else {
 						return new Response("unauthorized", {status: 401})
 					}
 				}
 			} else if (parts[1] === "peek") {
 				if (parts.length === 2) {
-					return new Response(JSON.stringify(
-						await lib.ghgist.peek(gistId)
-					))
+					return await lib.ghgist.peek(gistId)
 				}
 			} else if (parts[1] === "get") {
 				const path = parts.slice(2).join("/")
