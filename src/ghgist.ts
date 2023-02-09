@@ -48,7 +48,11 @@ export async function get(gistId: string, filename: string) {
 	const rawGistURL = await fetch(`https://gist.github.com/${gistId}`)
 	const res = await fetch(`${rawGistURL.url}/raw/${filename}?nonce=${Math.random()}`)
 	if (res.ok) {
-		let response = new Response(res.body)
+		let response = new Response(res.body, {
+			headers: {
+				"Cache-Control": "private",
+			}
+		})
 		return response
 	} else {
 		return new Response(res.statusText, { status: res.status })
