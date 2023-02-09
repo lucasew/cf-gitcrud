@@ -21,4 +21,4 @@ Basic storage for small textual values based on GitHub Gists but allows you to b
 - `/:token/subgrant/:method/:payload`: Create another token with one permission that is a subset of the permissions available in the current token.
 
 # Limitations
-- Gist content has a cache TTL of 300s by default. That's the time it takes for a new information to be available to subsequent GETs. This app can't control this.
+- Gist content has a cache TTL of 300s by default. That's the time it takes for a new information to be available to subsequent GETs. This app uses Cloudflare's caching system to overcome this limitation but that may have rough edges, be cafreful.
