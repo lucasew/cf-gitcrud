@@ -52,9 +52,11 @@ export async function get(gistId: string, filename: string) {
 	} else {
 		const res = await fetch(`${rawGistURL.url}/raw/${filename}`)
 		if (res.ok) {
-			let response = new Response(res.clone().body)
+			let response = new Response(res.body)
 			response.headers.append('Cache-Control', `s-maxage=300`)
-			await caches.default.put(`https://ghgist.local/${gistId}/${filename}`, response)
+			await caches.default.delete(`https://ghgist.local/${gistId}/${filename}`)
+				.then(() => caches.default.put(`https://ghgist.local/${gistId}/${filename}`, response.clone()))
+
 			return response
 		} else {
 			return new Response(res.statusText, { status: res.status })
@@ -89,10 +91,11 @@ export async function update(gistId: string, files: Record<string,string>) {
 		input.files[file] = {
 			content: files[file]
 		}
-		cacheSets.push(() => {
+		cacheSets.push(async () => {
 			let cachedResponse = new Response(files[file]);
 			cachedResponse.headers.append('Cache-Control', 's-maxage=300')
-			return caches.default.put(`https://ghgist.local/${gistId}/${file}`, cachedResponse)
+			return caches.default.delete(`https://ghgist.local/${gistId}/${file}`)
+				.then(() => caches.default.put(`https://ghgist.local/${gistId}/${file}`, cachedResponse))
 		})
 	})
 	const content = JSON.stringify(input)
