@@ -15,7 +15,8 @@
         "@cloudflare/workers-types",
         "wrangler"
       ],
-      "automerge": true
+      "automerge": true,
+      "ignoreTests": true
     },
     {
       "matchUpdateTypes": [
